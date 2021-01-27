@@ -61,8 +61,10 @@ def information_gain(Y, attr):
         if attr[i] in group:
             group[attr[i]].append(Y[i])
         else:
-            group[attr[i]]=list(Y[i])
+            group[attr[i]]=[Y[i]]
     IG=entropy(Y)
     for i in group:
         IG-=(len(group[i])/total_size)*entropy(group[i])
-    return IG  
+    return IG    
+
+    
