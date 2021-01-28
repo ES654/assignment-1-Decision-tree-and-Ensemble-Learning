@@ -1,13 +1,28 @@
-
+from sklearn.tree import DecisionTreeClassifier
+import pandas as pd
+import numpy as np
+from sklearn import tree
 class BaggingClassifier():
-    def __init__(self, base_estimator, n_estimators=100):
+    def __init__(self, base_estimator=DecisionTreeClassifier(), n_estimators=100):
         '''
         :param base_estimator: The base estimator model instance from which the bagged ensemble is built (e.g., DecisionTree(), LinearRegression()).
                                You can pass the object of the estimator class
         :param n_estimators: The number of estimators/models in ensemble.
         '''
+        self.n_estimators=n_estimators
+        self.base_estimator=base_estimator   
+        self.trees=[None]*self.n_estimators
 
-        pass
+    def Unif_sample(self,X,y):
+        temp=pd.DataFrame(X)
+        y_g=list(y)
+        length=temp.shape[0]
+        y_samp=[0]*length
+        for i in range(length):
+            k=np.random.randint(length)
+            temp.iloc[i]=list(X.iloc[k])
+            y_samp[i]=y_g[k]
+        return temp,y_samp 
 
     def fit(self, X, y):
         """
@@ -16,8 +31,12 @@ class BaggingClassifier():
         X: pd.DataFrame with rows as samples and columns as features (shape of X is N X P) where N is the number of samples and P is the number of columns.
         y: pd.Series with rows corresponding to output variable (shape of Y is N)
         """
-        pass
-
+        for i in range(self.n_estimators):
+            modl=self.base_estimator
+            a,b=self.Unif_sample(X,y)
+            modl.fit(a,b)
+            self.trees[i]=modl
+            
     def predict(self, X):
         """
         Funtion to run the BaggingClassifier on a data point
@@ -26,7 +45,17 @@ class BaggingClassifier():
         Output:
         y: pd.Series with rows corresponding to output variable. THe output variable in a row is the prediction for sample in corresponding row in X.
         """
-        pass
+        len=X.shape[0]
+        predicts=dict()
+        Y_pred=[0]*len
+        for i in range(self.n_estimators):
+            predicts[i]=self.trees[i].predict(X)
+        for i in range(len):
+            a=list()
+            for j in range(self.n_estimators):
+                a.append(predicts[j][i])
+            Y_pred[i]=max(set(a),key=a.count)        
+        return pd.Series(Y_pred)
 
     def plot(self):
         """
@@ -40,6 +69,5 @@ class BaggingClassifier():
         Reference for decision surface: https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html
 
         This function should return [fig1, fig2]
-
         """
         pass
