@@ -1,4 +1,5 @@
-
+import numpy as np
+from sklearn.tree import DecisionTreeClassifier
 class AdaBoostClassifier():
     def __init__(self, base_estimator, n_estimators=3): # Optional Arguments: Type of estimator
         '''
@@ -7,8 +8,12 @@ class AdaBoostClassifier():
                                You can pass the object of the estimator class
         :param n_estimators: The maximum number of estimators at which boosting is terminated. In case of perfect fit, the learning procedure may be stopped early.
         '''
-
-        pass
+        self.n_estimators=n_estimators
+        if(base_estimator==None):
+            self.base_estimator=DecisionTreeClassifier(max_depth=1)
+        else:    
+            self.base_estimator=base_estimator
+        self.trees=[None]*n_estimators
 
     def fit(self, X, y):
         """
@@ -17,7 +22,19 @@ class AdaBoostClassifier():
         X: pd.DataFrame with rows as samples and columns as features (shape of X is N X P) where N is the number of samples and P is the number of columns.
         y: pd.Series with rows corresponding to output variable (shape of Y is N)
         """
-        pass
+        y=np.array(y)
+        size_y=len(y)
+        weight=np.array([1/size_y]*size_y)
+        for i in range(self.n_estimators):
+            Dt=self.base_estimator
+            Dt.fit(X,y,sample_weight=weight)
+            mask=y!=np.array(Dt.predict(X))
+            error=np.sum(weight*mask)/np.sum(weight)
+            alpha=0
+            if(error!=0):
+                alpha=np.log((1-error)/error)  
+            weight=weight*np.exp(np.where(mask,1,-1)*alpha)
+            self.trees[i]=(alpha,Dt)
 
     def predict(self, X):
         """
@@ -26,7 +43,12 @@ class AdaBoostClassifier():
         Output:
         y: pd.Series with rows corresponding to output variable. THe output variable in a row is the prediction for sample in corresponding row in X.
         """
-        pass
+        y=0
+        for i in range(self.n_estimators):
+            alpha,Dt=self.trees[i]
+            y+=alpha*Dt.predict(X)
+        y=np.where(y!=0,abs(y)/y,1)
+        return y
 
     def plot(self):
         """
