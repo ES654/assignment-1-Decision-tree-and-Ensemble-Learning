@@ -38,7 +38,9 @@ class DecisionTree():
     def find_split(self,X_features,y,type):
         Feature=0
         split_value=None
+        type_out='R'
         if(type=='DD'):
+            type_out='D'
             opt_loss=-10000000000
             y_size=y.size
             for i in X_features:
@@ -79,6 +81,7 @@ class DecisionTree():
                         split_value=spliting_value    
 
         elif(type=='DR'):
+            type_out='D'
             opt_loss=1000000000
             y_size=y.size
             for i in X_features:
@@ -93,8 +96,9 @@ class DecisionTree():
                     opt_loss=loss            
 
         else:
-            opt_loss=10000000000
+            opt_loss=1000000000000
             y_size=y.size
+            split_value=list(y)[0]
             for i in X_features:
                 column=X_features[i]
                 col_list=list(column.sort_values())
@@ -109,13 +113,14 @@ class DecisionTree():
                         Feature=i
                         split_value=spliting_value
 
-        return Feature,split_value
+        return Feature,split_value,type_out
  
     def fit_Tree(self,X,y,depth):
         node=Node()
         split_value=None
         Feature=None
-        if(y.dtype.name=="category"):
+        type_out='R'
+        if(y.dtype!='float' or y.dtype!='float64'):
             groups=np.unique(y)
             a=list(y)
             if(X.shape[1]==0 or self.max_depth==depth or groups.size==1):
@@ -124,10 +129,10 @@ class DecisionTree():
                 node.type='D'
                 node.depth=depth
                 return node   
-            if(not('float' in list(X.dtypes))):
-                Feature,split_value=self.find_split(X,y,'DD')
+            if(not('float' in list(X.dtypes) or 'float64' in list(X.dtypes))):
+                Feature,split_value,type_out=self.find_split(X,y,'DD')
             else:
-                Feature,split_value=self.find_split(X,y,'RD')
+                Feature,split_value,type_out=self.find_split(X,y,'RD')
         else:
             if(X.shape[1]==0 or self.max_depth==depth or y.size==1):
                 node.isleaf=True
@@ -135,12 +140,12 @@ class DecisionTree():
                 node.value=y.mean()
                 node.depth=depth
                 return node
-            if(not('float' in list(X.dtypes))):
-                Feature,split_value=self.find_split(X,y,'DR')
+            if(not('float' in list(X.dtypes) or 'float64' in list(X.dtypes))):
+                Feature,split_value,type_out=self.find_split(X,y,'DR')
             else:
-                Feature,split_value=self.find_split(X,y,'RR')
+                Feature,split_value,type_out=self.find_split(X,y,'RR')
 
-        if(split_value==None):
+        if(type_out=='D'):
             node.type='D'
             node.feature=Feature
             node.depth=depth
