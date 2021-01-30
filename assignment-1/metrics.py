@@ -44,7 +44,7 @@ def precision(y_hat, y, cls):
         if(predict[i]==cls):
             if(predict[i]==Gtruth[i]):
                 Trueclass+=1
-        allclass+=1
+            allclass+=1
     return Trueclass/allclass            
 
 def recall(y_hat, y, cls):
@@ -66,7 +66,7 @@ def recall(y_hat, y, cls):
         if(Gtruth[i]==cls):
             if(predict[i]==Gtruth[i]):
                 Trueclass+=1
-        allclass+=1
+            allclass+=1
     return Trueclass/allclass
 
 
