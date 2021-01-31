@@ -1,5 +1,11 @@
+from numpy.core.fromnumeric import shape
 from .base import DecisionTree
-
+import matplotlib.pyplot as plt
+from sklearn import tree
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeRegressor
+import numpy as np
+import pandas as pd
 class RandomForestClassifier():
     def __init__(self, n_estimators=100, criterion='gini', max_depth=None):
         '''
@@ -8,8 +14,9 @@ class RandomForestClassifier():
         :param criterion: The function to measure the quality of a split.
         :param max_depth: The maximum depth of the tree.
         '''
-
-        pass
+        self.max_depth=max_depth
+        self.n_estimators=n_estimators
+        self.Forest=[None]*n_estimators
 
     def fit(self, X, y):
         """
@@ -18,7 +25,13 @@ class RandomForestClassifier():
         X: pd.DataFrame with rows as samples and columns as features (shape of X is N X P) where N is the number of samples and P is the number of columns.
         y: pd.Series with rows corresponding to output variable (shape of Y is N)
         """
-        pass
+        X_temp1=X.copy()
+        X_temp1["res"]=y
+        for i in range(self.n_estimators):
+            X_temp=X_temp1.sample(frac=0.6)
+            Dt=DecisionTreeClassifier(max_features=1)
+            Dt.fit(X_temp.iloc[:,:-1],X_temp.iloc[:,-1])
+            self.Forest[i]=Dt
 
     def predict(self, X):
         """
@@ -28,9 +41,18 @@ class RandomForestClassifier():
         Output:
         y: pd.Series with rows corresponding to output variable. THe output variable in a row is the prediction for sample in corresponding row in X.
         """
-        pass
+        res=np.zeros((X.shape[0],self.n_estimators))
+        print(res)
+        for i in range(self.n_estimators):
+            Dt=self.Forest[i]
+            res[:,i]=np.array(Dt.predict(X))
+        y_hat=np.zeros(X.shape[0])
+        for i in range(X.shape[0]):
+            a=list(res[i])
+            y_hat[i]=max(set(a),key=a.count)
+        return pd.Series(y_hat)
 
-    def plot(self):
+    def plot(self,X):
         """
         Function to plot for the RandomForestClassifier.
         It creates three figures
@@ -43,7 +65,13 @@ class RandomForestClassifier():
         3. Creates a figure showing the combined decision surface
 
         """
-        pass
+        for i in range(self.n_estimators):
+            tree.plot_tree(self.Forest[i])
+            temp="Tree number"+str(i)
+            plt.title(temp)
+            plt.show()
+
+
 
 
 
@@ -54,8 +82,8 @@ class RandomForestRegressor():
         :param criterion: The function to measure the quality of a split.
         :param max_depth: The maximum depth of the tree.
         '''
-
-        pass
+        self.n_estimators=n_estimators
+        self.Forest=[None]*n_estimators
 
     def fit(self, X, y):
         """
@@ -64,7 +92,13 @@ class RandomForestRegressor():
         X: pd.DataFrame with rows as samples and columns as features (shape of X is N X P) where N is the number of samples and P is the number of columns.
         y: pd.Series with rows corresponding to output variable (shape of Y is N)
         """
-        pass
+        X_temp1=X.copy()
+        X_temp1["res"]=y
+        for i in range(self.n_estimators):
+            X_temp=X_temp1.sample(frac=0.6)
+            Dt=DecisionTreeRegressor(max_features=1)
+            Dt.fit(X_temp.iloc[:,:-1],X_temp.iloc[:,-1])
+            self.Forest[i]=Dt
 
     def predict(self, X):
         """
@@ -74,7 +108,14 @@ class RandomForestRegressor():
         Output:
         y: pd.Series with rows corresponding to output variable. THe output variable in a row is the prediction for sample in corresponding row in X.
         """
-        pass
+        res=np.zeros((X.shape[0],self.n_estimators))
+        for i in range(self.n_estimators):
+            Dt=self.Forest[i]
+            res[:,i]=np.array(Dt.predict(X))
+        y_hat=np.zeros(X.shape[0])
+        for i in range(X.shape[0]):
+            y_hat[i]=np.mean(res[i])
+        return pd.Series(y_hat)
 
     def plot(self):
         """
@@ -89,4 +130,9 @@ class RandomForestRegressor():
         3. Creates a figure showing the combined decision surface/prediction
 
         """
-        pass
+        for i in range(self.n_estimators):
+            tree.plot_tree(self.Forest[i])
+            temp="Tree number"+str(i)
+            plt.title(temp)
+            plt.show()
+
