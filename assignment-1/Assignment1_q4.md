@@ -16,6 +16,4 @@
 * Here the the graph of N vs T is of order O(N<sup>2</sup>) for Real input and its O(N) for discrete input().
 * Same applies for P vs T.
 * When it comes to Predict its completely unpridictable and depends on Tree depth and How many times a feature is checked.
-* Again Real cases have Large Trees, which make them consume a little bit extra time.
-
-
+* Again Real output cases have Large Trees, which make them consume a little bit extra time.
