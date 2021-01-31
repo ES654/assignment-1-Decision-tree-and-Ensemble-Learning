@@ -82,15 +82,15 @@ class AdaBoostClassifier():
                 plt.scatter(x_axis[i],y_axis[i],c='BLUE',cmap=plt.cm.RdYlBu)
         plt.show()
 
-        # fig,ax=plt.subplots(1,self.n_estimators)
-        # for i in range(self.n_estimators):
-        #     alpha,Dt,weights=self.trees[i]
-        #     y_hat=list(Dt.predict(X))
-        #     weight=list(weights/np.max(weights)*40)
-        #     x_axis=list(X.iloc[:,0])
-        #     y_axis=list(X.iloc[:,1])
-        #     print(len(weight),len(x_axis),len(y_axis))
-        #     ax[i].scatter(x_axis,y_axis,s=weight)
-        #     temp="Alpha value is: "+str(alpha)
-        #     ax[i].set_title(temp)
-        # plt.show()
+        fig,ax=plt.subplots(1,self.n_estimators)
+        for i in range(self.n_estimators):
+            alpha,Dt,weights=self.trees[i]
+            y_hat=list(Dt.predict(X))
+            weight=list(weights/np.max(weights)*40)
+            x_axis=list(X.iloc[:,0])
+            y_axis=list(X.iloc[:,1])
+            print(len(weight),len(x_axis),len(y_axis))
+            ax[i].scatter(x_axis,y_axis,s=weight)
+            temp="Alpha value is: "+str(alpha)
+            ax[i].set_title(temp)
+        plt.show()
