@@ -21,7 +21,6 @@ N = 30
 P = 5
 X = pd.DataFrame(np.random.randn(N, P))
 y = pd.Series(np.random.randint(P, size = N), dtype="category")
-
 for criteria in ['information_gain', 'gini_index']:
     Classifier_RF = RandomForestClassifier(10, criterion = criteria)
     Classifier_RF.fit(X, y)
@@ -30,8 +29,8 @@ for criteria in ['information_gain', 'gini_index']:
     print('Criteria :', criteria)
     print('Accuracy: ', accuracy(y_hat, y))
     for cls in y.unique():
-        print('Precision: ', precision(y_hat, y, cls))
-        print('Recall: ', recall(y_hat, y, cls))
+        print('Precision of {} is: '.format(cls), precision(y_hat, y, cls))
+        print('Recall of {} is: '.format(cls), recall(y_hat, y, cls))
 
 ########### RandomForestRegressor ###################
 
@@ -40,10 +39,9 @@ P = 5
 X = pd.DataFrame(np.random.randn(N, P))
 y = pd.Series(np.random.randn(N))
 
-Regressor_RF = RandomForestRegressor(10, criterion = criteria)
+Regressor_RF = RandomForestRegressor(10)
 Regressor_RF.fit(X, y)
 y_hat = Regressor_RF.predict(X)
 Regressor_RF.plot()
-print('Criteria :', criteria)
 print('RMSE: ', rmse(y_hat, y))
 print('MAE: ', mae(y_hat, y))
