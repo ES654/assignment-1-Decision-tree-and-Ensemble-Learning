@@ -42,7 +42,6 @@ class RandomForestClassifier():
         y: pd.Series with rows corresponding to output variable. THe output variable in a row is the prediction for sample in corresponding row in X.
         """
         res=np.zeros((X.shape[0],self.n_estimators))
-        print(res)
         for i in range(self.n_estimators):
             Dt=self.Forest[i]
             res[:,i]=np.array(Dt.predict(X))
@@ -71,6 +70,25 @@ class RandomForestClassifier():
             plt.title(temp)
             plt.show()
 
+        x_min, x_max = X.iloc[:, 0].min() - 1, X.iloc[:, 0].max() + 1
+        y_min, y_max = X.iloc[:, 1].min() - 1, X.iloc[:, 1].max() + 1
+        xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.02),np.arange(y_min, y_max, 0.02))
+        plt.tight_layout(h_pad=0.5, w_pad=0.5, pad=2.5)
+        Z = np.array(self.predict(np.c_[xx.ravel(), yy.ravel()]))
+        Z = Z.reshape(xx.shape)
+        cs = plt.contourf(xx, yy, Z, cmap=plt.cm.RdYlBu)
+
+        y_hat=list(self.predict(X))
+        x_axis=list(X.iloc[:,0])
+        y_axis=list(X.iloc[:,1])
+        for i in range(len(x_axis)):
+            if(y_hat[i]==1):
+                plt.scatter(x_axis[i],y_axis[i],c='RED',cmap=plt.cm.RdYlBu)
+            elif(y_hat[i]==2):
+                plt.scatter(x_axis[i],y_axis[i],c='BLUE',cmap=plt.cm.RdYlBu)
+            else:
+                plt.scatter(x_axis[i],y_axis[i],c="GREEN",cmap=plt.cm.RdYlBu)    
+        plt.show()
 
 
 
